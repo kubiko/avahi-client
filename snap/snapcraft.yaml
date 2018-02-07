@@ -1,0 +1,59 @@
+name: avahi-client
+version: '0.5'
+summary: Avahi sample client
+description: |
+    Avahi sample client
+
+grade: stable
+confinement: strict
+
+apps:
+    browse:
+        command: avahi-browse
+        plugs:
+          - avahi-observe
+
+    browse-domains:
+        command: avahi-browse-domains
+        plugs:
+          - avahi-observe
+
+    publish-address:
+        command: avahi-publish-address
+        plugs:
+          - avahi-control
+
+    publish-service:
+        command: avahi-publish-service
+        plugs:
+          - avahi-control
+
+    resolve-address:
+        command: avahi-resolve-address
+        plugs:
+          - avahi-observe
+
+    resolve-host-name:
+        command: avahi-resolve-host-name
+        plugs:
+          - avahi-observe
+
+    publish:
+        command: avahi-publish
+        plugs:
+          - avahi-control
+
+    resolve:
+        command: avahi-resolve
+        plugs:
+          - avahi-observe
+
+    set-host-name:
+        command: avahi-set-host-name
+        plugs:
+          - avahi-control
+
+parts:
+  avahi-utils:
+    plugin: nil
+    stage-packages: [avahi-utils]
