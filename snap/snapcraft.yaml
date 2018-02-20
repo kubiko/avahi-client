@@ -7,6 +7,12 @@ description: |
 grade: stable
 confinement: strict
 
+plugs:
+  avahi-daemon-socket:
+    interface: content
+    default-provider: avahi
+    target: $SNAP_DATA/var/run/avahi-daemon
+
 apps:
     browse:
         command: avahi-browse
@@ -52,8 +58,24 @@ apps:
         command: avahi-set-host-name
         plugs:
           - avahi-control
+    ping:
+        command: ping
+        plugs:
+          - avahi-control
+          - network-observe
 
 parts:
   avahi-utils:
     plugin: nil
-    stage-packages: [avahi-utils]
+    stage-packages: [avahi-utils,iputils-ping]
+
+  nss-mdns:
+    plugin: autotools
+    source: https://github.com/lathiat/nss-mdns.git
+    configflags:
+      - --sysconfdir=/var/snap/avahi-client/common/etc
+      - --localstatedir=/var/snap/avahi-client/current/var
+
+  nsswitch:
+    plugin: dump
+    source: etc
