@@ -75,6 +75,7 @@ parts:
     configflags:
       - --sysconfdir=/var/snap/avahi-client/common/etc
       - --localstatedir=/var/snap/avahi-client/current/var
+    build-packages: [pkg-config]
 
   nsswitch:
     plugin: dump
