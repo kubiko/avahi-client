@@ -10,7 +10,8 @@ confinement: strict
 plugs:
   avahi-daemon-socket:
     interface: content
-    default-provider: avahi
+    content: avahi-daemon-socket
+    default-provider: avahi:daemon-socket
     target: $SNAP_DATA/var/run/avahi-daemon
 
 apps:
