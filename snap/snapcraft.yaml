@@ -1,5 +1,6 @@
 name: avahi-client
-version: '0.5'
+version: '0.0'
+version-script: dpkg-deb -f parts/avahi-utils/ubuntu/download/avahi-utils_*.deb Version | cut -c -6
 summary: Avahi sample client
 description: |
     Avahi sample client
@@ -65,11 +66,33 @@ apps:
           - avahi-control
           - network-observe
 
+    ping6:
+        command: ping6
+        plugs:
+          - avahi-control
+          - network-observe
+
 parts:
   avahi-utils:
     plugin: nil
-    stage-packages: [avahi-utils,iputils-ping]
-
+    stage-packages: [avahi-utils]
+    stage:
+      - -var
+      - -etc
+      - -lib
+      - -usr/bin/d*
+      - -usr/bin/host
+      - -usr/sbin
+      - -usr/share
+      - -usr/lib/avahi
+      - -usr/lib/dbus-1.0
+      - -usr/lib/gcc
+      - -usr/lib/tmpfiles.d
+    install: |
+      mv ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libavahi* ${SNAPCRAFT_PART_INSTALL}/usr/lib/
+      rm -rf ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/*
+      mv ${SNAPCRAFT_PART_INSTALL}/usr/lib/libavahi* ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
+      rm -rf ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libavahi-core*
   nss-mdns:
     plugin: autotools
     source: https://github.com/lathiat/nss-mdns.git
@@ -77,7 +100,8 @@ parts:
       - --sysconfdir=/var/snap/avahi-client/common/etc
       - --localstatedir=/var/snap/avahi-client/current/var
     build-packages: [pkg-config]
-
-  nsswitch:
-    plugin: dump
-    source: etc
+    install: |
+      mkdir -p ${SNAPCRAFT_PART_INSTALL}/etc
+      cp /snap/core/current/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc
+      sed -i -e 's/hosts:.* files dns/& mdns4/' -e 's/hosts:.* files/& mdns4_minimal [NOTFOUND=return]/' ${SNAPCRAFT_PART_INSTALL}/etc/nsswitch.conf      
+      touch ${SNAPCRAFT_PART_INSTALL}/etc/mdns.allow
