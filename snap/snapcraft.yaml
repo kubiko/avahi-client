@@ -88,11 +88,11 @@ parts:
       - -usr/lib/dbus-1.0
       - -usr/lib/gcc
       - -usr/lib/tmpfiles.d
+    build-packages: [iputils-ping]
     install: |
-      mv ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libavahi* ${SNAPCRAFT_PART_INSTALL}/usr/lib/
-      rm -rf ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/*
-      mv ${SNAPCRAFT_PART_INSTALL}/usr/lib/libavahi* ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-      rm -rf ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libavahi-core*
+      find ${SNAPCRAFT_PART_INSTALL}/usr/lib/*linux-gnu*/* ! -name "libavahi*" -exec rm -rf {} +
+      find ${SNAPCRAFT_PART_INSTALL}/usr/lib/*linux-gnu*/* -name "libavahi-core*" -exec rm -f {} \;
+
   nss-mdns:
     plugin: autotools
     source: https://github.com/lathiat/nss-mdns.git
@@ -102,6 +102,13 @@ parts:
     build-packages: [pkg-config]
     install: |
       mkdir -p ${SNAPCRAFT_PART_INSTALL}/etc
-      cp /snap/core/current/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc
+      if [ -e /snap/core/current/etc/nsswitch.conf ]; then \
+          cp /snap/core/current/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc; \
+      else \
+          snap download core; \
+          echo "etc/nsswitch.conf" > content; \
+          unsquashfs -d core -e content core_*.snap; \
+          cp core/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc; \
+      fi
       sed -i -e 's/hosts:.* files dns/& mdns4/' -e 's/hosts:.* files/& mdns4_minimal [NOTFOUND=return]/' ${SNAPCRAFT_PART_INSTALL}/etc/nsswitch.conf      
       touch ${SNAPCRAFT_PART_INSTALL}/etc/mdns.allow
