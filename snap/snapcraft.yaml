@@ -15,6 +15,10 @@ plugs:
     default-provider: avahi:daemon-socket
     target: $SNAP_DATA/var/run/avahi-daemon
 
+layout:
+    /etc/nsswitch.conf:
+        bind-file: $SNAP_COMMON/etc/nsswitch.conf
+
 apps:
     browse:
         command: avahi-browse
