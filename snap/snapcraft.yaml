@@ -94,7 +94,8 @@ parts:
       - -usr/lib/gcc
       - -usr/lib/tmpfiles.d
     build-packages: [iputils-ping]
-    install: |
+    override-build: |
+      snapcraftctl build
       find ${SNAPCRAFT_PART_INSTALL}/usr/lib/*linux-gnu*/* ! -name "libavahi*" -exec rm -rf {} +
       find ${SNAPCRAFT_PART_INSTALL}/usr/lib/*linux-gnu*/* -name "libavahi-core*" -exec rm -f {} \;
 
@@ -105,14 +106,15 @@ parts:
       - --sysconfdir=/var/snap/avahi-client/common/etc
       - --localstatedir=/var/snap/avahi-client/current/var
     build-packages: [pkg-config]
-    install: |
+    override-build: |
+      snapcraftctl build
       mkdir -p ${SNAPCRAFT_PART_INSTALL}/etc
       if [ -e /snap/core/current/etc/nsswitch.conf ]; then \
           cp /snap/core/current/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc; \
       else \
           snap download core; \
           echo "etc/nsswitch.conf" > content; \
-          unsquashfs -d core -e content core_*.snap; \
+          unsquashfs -d core -e content core_*.snap etc/nsswitch.conf; \
           cp core/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc; \
       fi
       sed -i -e 's/hosts:.* files dns/& mdns4/' -e 's/hosts:.* files/& mdns4_minimal [NOTFOUND=return]/' ${SNAPCRAFT_PART_INSTALL}/etc/nsswitch.conf      
