@@ -8,13 +8,6 @@ description: |
 grade: stable
 confinement: strict
 
-plugs:
-  avahi-daemon-socket:
-    interface: content
-    content: avahi-daemon-socket
-    default-provider: avahi:daemon-socket
-    target: $SNAP_DATA/var/run/avahi-daemon
-
 passthrough:
   layout:
       /etc/nsswitch.conf:
@@ -148,7 +141,7 @@ parts:
     source: https://github.com/lathiat/nss-mdns.git
     configflags:
       - --sysconfdir=/var/snap/${SNAPCRAFT_PROJECT_NAME}/common/etc
-      - --localstatedir=/var/snap/${SNAPCRAFT_PROJECT_NAME}/current/var
+      - --localstatedir=/var
     build-packages: [pkg-config]
     override-build: |
       snapcraftctl build
