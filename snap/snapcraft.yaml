@@ -1,17 +1,17 @@
 name: avahi-client
 version: '0.0'
-version-script: dpkg-deb -f parts/avahi-utils/ubuntu/download/avahi-utils_*.deb Version | sed 's/ubuntu.*$//g'
+version-script: dpkg-deb -f parts/avahi-utils/stage_packages/avahi-utils_*.deb Version | sed 's/ubuntu.*$//g'
 summary: Avahi sample client
 description: |
     Avahi sample client
 
+base: core20
 grade: stable
 confinement: strict
 
 architectures:
     - build-on: armhf
     - build-on: arm64
-    - build-on: i386
     - build-on: amd64
 
 passthrough:
@@ -123,7 +123,9 @@ apps:
 parts:
   avahi-utils:
     plugin: nil
-    stage-packages: [avahi-utils, iputils-ping]
+    stage-packages:
+      - avahi-utils
+      - iputils-ping
     stage:
       - -var
       - -etc
@@ -136,7 +138,6 @@ parts:
       - -usr/lib/dbus-1.0
       - -usr/lib/gcc
       - -usr/lib/tmpfiles.d
-    build-packages: [iputils-ping]
     override-build: |
       snapcraftctl build
       find ${SNAPCRAFT_PART_INSTALL}/usr/lib/*linux-gnu*/* ! -name "libavahi*" -exec rm -rf {} +
@@ -145,10 +146,9 @@ parts:
   nss-mdns:
     plugin: autotools
     source: https://github.com/lathiat/nss-mdns.git
-    configflags:
+    autotools-configure-parameters:
       - --sysconfdir=/var/snap/${SNAPCRAFT_PROJECT_NAME}/common/etc
       - --localstatedir=/var
-    build-packages: [pkg-config]
     override-build: |
       snapcraftctl build
       mkdir -p ${SNAPCRAFT_PART_INSTALL}/etc
@@ -162,3 +162,7 @@ parts:
       fi
       sed -i -e 's/hosts:.* files dns/& mdns4/' -e 's/hosts:.* files/& mdns4_minimal [NOTFOUND=return]/' ${SNAPCRAFT_PART_INSTALL}/etc/nsswitch.conf      
       touch ${SNAPCRAFT_PART_INSTALL}/etc/mdns.allow
+
+build-packages:
+  - iputils-ping
+  - pkg-config
