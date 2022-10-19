@@ -10,115 +10,85 @@ grade: stable
 confinement: strict
 
 architectures:
-    - build-on: armhf
-    - build-on: arm64
-    - build-on: amd64
+  - build-on: armhf
+  - build-on: arm64
+  - build-on: amd64
 
-passthrough:
-  layout:
-      /etc/nsswitch.conf:
-          bind-file: $SNAP_COMMON/etc/nsswitch.conf
+layout:
+  /etc/nsswitch.conf:
+    bind-file: $SNAP_COMMON/etc/nsswitch.conf
+
+environment:
+  PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
+  LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
 
 apps:
-    browse:
-        command: usr/bin/avahi-browse
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-observe
+  browse:
+    command: usr/bin/avahi-browse
+    adapter: none
+    plugs:
+      - avahi-observe
 
-    browse-domains:
-        command: usr/bin/avahi-browse-domains
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-observe
+  browse-domains:
+    command: usr/bin/avahi-browse-domains
+    adapter: none
+    plugs:
+      - avahi-observe
 
-    publish-address:
-        command: usr/bin/avahi-publish-address
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-control
+  publish-address:
+    command: usr/bin/avahi-publish-address
+    adapter: none
+    plugs:
+      - avahi-control
 
-    publish-service:
-        command: usr/bin/avahi-publish-service
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-control
+  publish-service:
+    command: usr/bin/avahi-publish-service
+    adapter: none
+    plugs:
+      - avahi-control
 
-    resolve-address:
-        command: usr/bin/avahi-resolve-address
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-observe
+  resolve-address:
+    command: usr/bin/avahi-resolve-address
+    adapter: none
+    plugs:
+      - avahi-observe
 
-    resolve-host-name:
-        command: usr/bin/avahi-resolve-host-name
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-observe
+  resolve-host-name:
+    command: usr/bin/avahi-resolve-host-name
+    adapter: none
+    plugs:
+      - avahi-observe
 
-    publish:
-        command: usr/bin/avahi-publish
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-control
+  publish:
+    command: usr/bin/avahi-publish
+    adapter: none
+    plugs:
+      - avahi-control
 
-    resolve:
-        command: usr/bin/avahi-resolve
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-observe
+  resolve:
+    command: usr/bin/avahi-resolve
+    adapter: none
+    plugs:
+      - avahi-observe
 
-    set-host-name:
-        command: usr/bin/avahi-set-host-name
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-control
-    ping:
-        command: bin/ping
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-control
-          - network-observe
+  set-host-name:
+    command: usr/bin/avahi-set-host-name
+    adapter: none
+    plugs:
+      - avahi-control
+  ping:
+    command: bin/ping
+    adapter: none
+    plugs:
+      - avahi-control
+      - network-observe
 
-    ping6:
-        command: bin/ping6
-        adapter: none
-        environment:
-          PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-          LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
-        plugs:
-          - avahi-control
-          - network-observe
+  ping6:
+    command: bin/ping6
+    adapter: none
+    plugs:
+      - avahi-control
+      - network-observe
 
 parts:
   avahi-utils:
@@ -126,6 +96,7 @@ parts:
     stage-packages:
       - avahi-utils
       - iputils-ping
+      - libgdbm6
     stage:
       - -var
       - -etc
