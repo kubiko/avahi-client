@@ -14,10 +14,6 @@ architectures:
   - build-on: arm64
   - build-on: amd64
 
-layout:
-  /etc/nsswitch.conf:
-    bind-file: $SNAP_COMMON/etc/nsswitch.conf
-
 environment:
   PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
   LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
@@ -97,43 +93,4 @@ parts:
       - avahi-utils
       - iputils-ping
       - libgdbm6
-    stage:
-      - -var
-      - -etc
-      - -lib
-      - -usr/bin/d*
-      - -usr/bin/host
-      - -usr/sbin
-      - -usr/share
-      - -usr/lib/avahi
-      - -usr/lib/dbus-1.0
-      - -usr/lib/gcc
-      - -usr/lib/tmpfiles.d
-    override-build: |
-      snapcraftctl build
-      find ${SNAPCRAFT_PART_INSTALL}/usr/lib/*linux-gnu*/* ! -name "libavahi*" -exec rm -rf {} +
-      find ${SNAPCRAFT_PART_INSTALL}/usr/lib/*linux-gnu*/* -name "libavahi-core*" -exec rm -f {} \;
-
-  nss-mdns:
-    plugin: autotools
-    source: https://github.com/lathiat/nss-mdns.git
-    autotools-configure-parameters:
-      - --sysconfdir=/var/snap/${SNAPCRAFT_PROJECT_NAME}/common/etc
-      - --localstatedir=/var
-    override-build: |
-      snapcraftctl build
-      mkdir -p ${SNAPCRAFT_PART_INSTALL}/etc
-      if [ -e /snap/core/current/etc/nsswitch.conf ]; then \
-          cp /snap/core/current/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc; \
-      else \
-          snap download core; \
-          echo "etc/nsswitch.conf" > content; \
-          unsquashfs -d core -e content core_*.snap etc/nsswitch.conf; \
-          cp core/etc/nsswitch.conf ${SNAPCRAFT_PART_INSTALL}/etc; \
-      fi
-      sed -i -e 's/hosts:.* files dns/& mdns4/' -e 's/hosts:.* files/& mdns4_minimal [NOTFOUND=return]/' ${SNAPCRAFT_PART_INSTALL}/etc/nsswitch.conf      
-      touch ${SNAPCRAFT_PART_INSTALL}/etc/mdns.allow
-
-build-packages:
-  - iputils-ping
-  - pkg-config
+      - libnss-mdns
