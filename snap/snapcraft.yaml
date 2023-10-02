@@ -1,11 +1,11 @@
 name: avahi-client
 version: '0.0'
-version-script: dpkg-deb -f parts/avahi-utils/stage_packages/avahi-utils_*.deb Version | sed 's/ubuntu.*$//g'
+adopt-info: avahi-utils
 summary: Avahi sample client
 description: |
     Avahi sample client
 
-base: core20
+base: core22
 grade: stable
 confinement: strict
 
@@ -13,75 +13,65 @@ architectures:
   - build-on: armhf
   - build-on: arm64
   - build-on: amd64
+  - build-on: riscv64
 
 environment:
   PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-  LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
+  LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
 
 apps:
   browse:
     command: usr/bin/avahi-browse
-    adapter: none
     plugs:
       - avahi-observe
 
   browse-domains:
     command: usr/bin/avahi-browse-domains
-    adapter: none
     plugs:
       - avahi-observe
 
   publish-address:
     command: usr/bin/avahi-publish-address
-    adapter: none
     plugs:
       - avahi-control
 
   publish-service:
     command: usr/bin/avahi-publish-service
-    adapter: none
     plugs:
       - avahi-control
 
   resolve-address:
     command: usr/bin/avahi-resolve-address
-    adapter: none
     plugs:
       - avahi-observe
 
   resolve-host-name:
     command: usr/bin/avahi-resolve-host-name
-    adapter: none
     plugs:
       - avahi-observe
 
   publish:
     command: usr/bin/avahi-publish
-    adapter: none
     plugs:
       - avahi-control
 
   resolve:
     command: usr/bin/avahi-resolve
-    adapter: none
     plugs:
       - avahi-observe
 
   set-host-name:
     command: usr/bin/avahi-set-host-name
-    adapter: none
     plugs:
       - avahi-control
   ping:
     command: bin/ping
-    adapter: none
     plugs:
       - avahi-control
       - network-observe
 
   ping6:
     command: bin/ping6
-    adapter: none
     plugs:
       - avahi-control
       - network-observe
@@ -94,3 +84,7 @@ parts:
       - iputils-ping
       - libgdbm6
       - libnss-mdns
+    override-build: |
+      craftctl default
+      version=$(awk -F '=' '$1 ~ /avahi-daemon/ {print $2;}' ../state/pull)
+      craftctl set version=${version}
