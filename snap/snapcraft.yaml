@@ -1,23 +1,22 @@
 name: avahi-client
-version: '0.0'
 adopt-info: avahi-utils
 summary: Avahi sample client
 description: |
     Avahi sample client
 
-base: core22
+base: core24
 grade: stable
 confinement: strict
 
-architectures:
-  - build-on: armhf
-  - build-on: arm64
-  - build-on: amd64
-  - build-on: riscv64
+platforms:
+  armhf:
+  arm64:
+  amd64:
+  riscv64:
 
 environment:
-  PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
-  LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
+  PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$PATH
+  LD_LIBRARY_PATH: $SNAP/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
 
 apps:
   browse:
@@ -65,13 +64,13 @@ apps:
     plugs:
       - avahi-control
   ping:
-    command: bin/ping
+    command: usr/bin/ping
     plugs:
       - avahi-control
       - network-observe
 
   ping6:
-    command: bin/ping6
+    command: usr/bin/ping6
     plugs:
       - avahi-control
       - network-observe
@@ -82,7 +81,7 @@ parts:
     stage-packages:
       - avahi-utils
       - iputils-ping
-      - libgdbm6
+      - libgdbm6t64
       - libnss-mdns
     override-build: |
       craftctl default
