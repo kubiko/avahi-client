@@ -88,3 +88,10 @@ parts:
       craftctl default
       version=$(awk -F '=' '$1 ~ /avahi-daemon/ {print $2;}' ../state/pull)
       craftctl set version=${version}
+    stage:
+      - -etc
+      - -usr/sbin
+      - -usr/lib/**/libavahi-core*
+      - -usr/lib/**/libdaemon*
+      - -usr/share
+      - -var
